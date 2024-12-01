@@ -47,10 +47,12 @@ evaluation_chain = evaluation_prompt | llm | StrOutputParser()
 @app.route('/generate-problem', methods=['POST'])
 def generate_problem():
     try:
+        # the data that requests json and takes as parameters the data structure and difficulty
         data = request.json
         data_structure = data.get('dataStructure')
         difficulty = data.get('difficulty')
 
+        # the new data strcture and difficulty settings for the problem of coding
         if not data_structure or not difficulty:
             return jsonify({"error": "Missing dataStructure or difficulty"}), 400
 
@@ -60,6 +62,8 @@ def generate_problem():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# the submit soltuion post request that takes in the problem and solution as the parameters
 @app.route('/submit-solution', methods=['POST'])
 def submit_solution():
     try:
