@@ -295,7 +295,9 @@ export default function Home() {
                 value={language}
                 onChange={handleLanguageChange}
                 options={languageOptions}
-                className="w-40"
+                className={`text-sm w-40 ${
+                  theme === 'light' ? 'text-slate-700' : 'text-gray-800'
+                }`}
                 theme={theme === 'light' ? 'default' : 'dark'}
               />
             </div>
