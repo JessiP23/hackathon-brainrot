@@ -25,22 +25,50 @@ const defaultCodeTemplates = {
 
 // Function to format AI responses
 const formatAIResponse = (text) => {
-  // Remove unwanted characters like asterisks, slashes, and backslashes
-  let formattedText = text.replace(/[*\\]/g, '');
+  // Step 1: Remove unwanted characters
+  let cleanedText = text.replace(/[*\\]/g, ''); // Remove unwanted characters like asterisks, slashes, etc.
 
-  // Split text into lines and clean up each line
-  let lines = formattedText
-    .split('\n')
-    .map(line => line.trim()) // Trim whitespace from each line
-    .filter(line => line.length > 0); // Remove empty lines
+  // Step 2: Split the text into lines
+  const lines = cleanedText.split('\n');
 
-  // Join the cleaned lines with a double newline for better readability
-  formattedText = lines.join('\n\n');
+  // Step 3: Process each line with special rules for patterns
+  let isCodeBlock = false;
+  const formattedLines = lines.map(line => {
+    if (line.trim().startsWith('```')) {
+      // Toggle the code block flag and return the line as-is
+      isCodeBlock = !isCodeBlock;
+      return line.trim();
+    }
 
-  // Optionally, fix specific patterns (if needed, such as markdown artifacts)
-  formattedText = formattedText.replace(/`/g, ''); // Remove backticks if present
+    if (isCodeBlock) return line; // Keep lines in code blocks as-is
 
-  return formattedText;
+    // Ensure "Instructions" and "Example" start a new paragraph
+    if (line.includes('Instructions') || line.includes('Example')) {
+      return `\n${line.trim()}`; // Add a newline before these keywords
+    }
+
+    // Ensure numbered lists start on a new line
+    return line.replace(/(\d+\.\s)/g, '\n$1'); // Add newline before each numbered item
+  });
+
+  // Step 4: Join lines while ensuring proper spacing
+  const formattedText = formattedLines.join('\n').replace(/\n{2,}/g, '\n\n'); // Limit multiple newlines to 2
+
+  // Step 5: Split text into paragraphs outside code blocks
+  const paragraphs = [];
+  if (!isCodeBlock) {
+    const sentences = formattedText.split(/(?<=\.)\s/); // Split by periods followed by space
+    const midIndex = Math.ceil(sentences.length / 2);
+
+    // Create two paragraphs from sentences
+    paragraphs.push(sentences.slice(0, midIndex).join(' '));
+    paragraphs.push(sentences.slice(midIndex).join(' '));
+  } else {
+    paragraphs.push(formattedText);
+  }
+
+  // Return the formatted response with clear separation
+  return paragraphs.join('\n\n');
 };
 
 export default function Home() {
