@@ -86,7 +86,7 @@ export default function Home() {
           </button>
 
           {problem && (
-            <div className="mt-5">
+            <div className="mt-5 text-gray-800">
               <h2 className="text-xl font-bold mb-2">Problem:</h2>
               <p className="bg-gray-100 p-3 rounded">{problem}</p>
             </div>
