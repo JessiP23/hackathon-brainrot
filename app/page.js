@@ -92,7 +92,7 @@ export default function Home() {
             </div>
           )}
 
-          <div className="mt-5">
+          <div className="mt-5 text-gray-800">
             <h2 className="text-xl font-bold mb-2">Solution:</h2>
             <textarea
               value={solution}
