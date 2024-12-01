@@ -21,6 +21,15 @@ CORS(app)
 groq_api_key = os.getenv("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")
 llm = ChatGroq(api_key='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')
 
+# Define the prompt template for generating AI solutions
+solution_template = PromptTemplate.from_template(
+    "You are an expert programmer. Given the following problem and programming language, provide a detailed solution:\n\n"
+    "Problem: {problem}\n"
+    "Language: {language}\n\n"
+    "Please provide a step-by-step solution with explanations and the final code."
+)
+
+
 # Prompt template for generating hints
 hint_template = PromptTemplate(
     input_variables=["problem", "code"],
@@ -31,6 +40,8 @@ hint_template = PromptTemplate(
     )
 )
 
+# Create the LLMChain for generating solutions
+solution_chain = LLMChain(llm=llm, prompt=solution_template, output_parser=StrOutputParser())
 
 # LangChain setup
 problem_template = """
@@ -73,6 +84,20 @@ def generate_problem():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/get-ai-solution', methods=['POST'])
+def get_ai_solution():
+    data = request.json
+    problem = data.get('problem')
+    language = data.get('language')
+
+    if not problem or not language:
+        return jsonify({"error": "Missing problem or language"}), 400
+
+    try:
+        solution = solution_chain.run(problem=problem, language=language)
+        return jsonify({"solution": solution})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/get-hints", methods=["POST"])
 def get_hints():

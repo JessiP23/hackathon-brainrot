@@ -96,9 +96,9 @@ export default function Home() {
   const [solution, setSolution] = useState(defaultCodeTemplates[language.value]);
   const [feedback, setFeedback] = useState("");
   const [hints, setHints] = useState([]);
-  const [editorTheme, setEditorTheme] = useState("light");
   const [isClient, setIsClient] = useState(false);
   const [theme, setTheme] = useState("light");
+  const [aiSolution, setAiSolution] = useState("");
 
   useEffect(() => {
     setIsClient(true);
@@ -107,6 +107,19 @@ export default function Home() {
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   }
+
+  const getAISolution = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/get-ai-solution", {
+        problem,
+        language: language.value
+      });
+      setAiSolution(formatAIResponse(response.data.solution));
+    } catch (error) {
+      console.error("Error getting AI solution:", error);
+      setAiSolution("Error getting AI solution. Please try again.");
+    }
+  };
 
   // Function to generate a problem
   const generateProblem = async () => {
@@ -138,6 +151,29 @@ export default function Home() {
         language: language.value
       });
       setFeedback(formatAIResponse(response.data.feedback));
+    } catch (error) {
+      console.error("Error submitting solution:", error);
+      setFeedback("Error submitting solution. Please try again.");
+    }
+  };
+
+  const handleSubmit = async () => {
+    // Check if problem and solution are not empty
+    if (!problem || !solution) {
+      setFeedback("Please generate a problem and write a solution first.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/submit-solution", {
+        problem,
+        solution,
+        language: language.value
+      });
+      setFeedback(formatAIResponse(response.data.feedback));
+      
+      // Optionally fetch hints after submission
+      fetchHints(solution);
     } catch (error) {
       console.error("Error submitting solution:", error);
       setFeedback("Error submitting solution. Please try again.");
@@ -276,6 +312,30 @@ export default function Home() {
         </div>
       </div>
 
+      <div className="mt-8">
+        <button
+          type="submit"
+          onClick={handleSubmit}
+          className={`w-full py-3 rounded-md transition-colors duration-300 ${
+            theme === 'light'
+            ? 'bg-blue-600 text-white hover:bg-blue-700'
+            : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+        >
+          Submit Solution
+        </button>
+        <button 
+          onClick={getAISolution}
+          className={`w-full py-3 rounded-md mt-4 transition-colors duration-300 ${
+            theme === 'light'
+            ? 'bg-blue-600 text-white hover:bg-blue-700'
+            : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+        >
+          Get AI Solution
+        </button>
+      </div>
+
       {/* Solution Section */}
       <div className={`w-2/3 p-6 ${
         theme === 'light' 
@@ -315,16 +375,29 @@ export default function Home() {
             }}
           />
           
-          <button 
-            onClick={submitSolution}
-            className={`w-full py-3 rounded-md mt-4 transition-colors duration-300 ${
-              theme === 'light'
-              ? 'bg-green-600 text-white hover:bg-green-700'
-              : 'bg-green-500 text-white hover:bg-green-600'
-            }`}
-          >
-            Submit Solution
-          </button>
+          <div className="flex space-x-4">
+            <button 
+              onClick={submitSolution}
+              className={`flex-1 py-3 rounded-md transition-colors duration-300 ${
+                theme === 'light'
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-green-500 text-white hover:bg-green-600'
+              }`}
+            >
+              Submit Solution
+            </button>
+            
+            <button 
+              onClick={getAISolution}
+              className={`flex-1 py-3 rounded-md transition-colors duration-300 ${
+                theme === 'light'
+                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                : 'bg-indigo-500 text-white hover:bg-indigo-600'
+              }`}
+            >
+              Get AI Solution
+            </button>
+          </div>
 
           {hints.length > 0 && (
             <div className={`rounded-md p-4 ${
@@ -355,6 +428,19 @@ export default function Home() {
                 theme === 'light' ? 'text-slate-800' : 'text-white'
               }`}>Feedback:</h2>
               <p className={theme === 'light' ? 'text-slate-700' : 'text-slate-300'}>{feedback}</p>
+            </div>
+          )}
+
+{aiSolution && (
+            <div className={`rounded-md p-4 mt-4 ${
+              theme === 'light'
+              ? 'bg-slate-50 border border-slate-200'
+              : 'bg-slate-800 border border-slate-700'
+            }`}>
+              <h2 className={`text-lg font-semibold mb-2 ${
+                theme === 'light' ? 'text-slate-800' : 'text-white'
+              }`}>AI Solution:</h2>
+              <p className={theme === 'light' ? 'text-slate-700' : 'text-slate-300'}>{aiSolution}</p>
             </div>
           )}
         </div>
