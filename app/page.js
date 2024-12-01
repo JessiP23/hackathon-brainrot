@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Editor } from "@monaco-editor/react";
+import dynamic from 'next/dynamic';
 import Select from "react-select";
+
+const DynamicEditor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.Editor), { ssr: false });
 
 // Language options
 const languageOptions = [
@@ -21,6 +23,26 @@ const defaultCodeTemplates = {
   cpp: "// Write your solution here\n#include <iostream>\n\nusing namespace std;\n\n"
 };
 
+// Function to format AI responses
+const formatAIResponse = (text) => {
+  // Remove unwanted characters like asterisks, slashes, and backslashes
+  let formattedText = text.replace(/[*\\]/g, '');
+
+  // Split text into lines and clean up each line
+  let lines = formattedText
+    .split('\n')
+    .map(line => line.trim()) // Trim whitespace from each line
+    .filter(line => line.length > 0); // Remove empty lines
+
+  // Join the cleaned lines with a double newline for better readability
+  formattedText = lines.join('\n\n');
+
+  // Optionally, fix specific patterns (if needed, such as markdown artifacts)
+  formattedText = formattedText.replace(/`/g, ''); // Remove backticks if present
+
+  return formattedText;
+};
+
 export default function Home() {
   const [dataStructure, setDataStructure] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -29,15 +51,26 @@ export default function Home() {
   const [solution, setSolution] = useState(defaultCodeTemplates[language.value]);
   const [feedback, setFeedback] = useState("");
   const [editorTheme, setEditorTheme] = useState("light");
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Function to generate a problem
   const generateProblem = async () => {
     try {
+
+      if (!dataStructure || !difficulty) {
+        setProblem("Please select a data structure and difficulty.");
+        return;
+      }
+
       const response = await axios.post("http://127.0.0.1:5000/generate-problem", {
         dataStructure,
         difficulty,
       });
-      setProblem(response.data.problem);
+      setProblem(formatAIResponse(response.data.problem));
       setFeedback(""); // Clear previous feedback
     } catch (error) {
       console.error("Error generating problem:", error);
@@ -53,7 +86,7 @@ export default function Home() {
         solution,
         language: language.value
       });
-      setFeedback(response.data.feedback);
+      setFeedback(formatAIResponse(response.data.feedback));
     } catch (error) {
       console.error("Error submitting solution:", error);
       setFeedback("Error submitting solution. Please try again.");
@@ -65,6 +98,10 @@ export default function Home() {
     setLanguage(selectedLanguage);
     setSolution(defaultCodeTemplates[selectedLanguage.value]);
   };
+
+  if (!isClient) {
+    return null; // or a loading spinner
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
@@ -132,7 +169,7 @@ export default function Home() {
               </div>
             </div>
             
-            <Editor
+            <DynamicEditor
               height="300px"
               language={language.value}
               theme={editorTheme}
@@ -163,3 +200,4 @@ export default function Home() {
     </div>
   );
 }
+
