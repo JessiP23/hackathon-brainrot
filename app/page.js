@@ -63,7 +63,7 @@ export default function Home() {
             </select>
           </div>
 
-          <div className="mb-5">
+          <div className="mb-5 text-gray-800">
             <label htmlFor="difficulty" className="block mb-2">Select Difficulty:</label>
             <select
               id="difficulty"
