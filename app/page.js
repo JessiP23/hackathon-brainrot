@@ -180,119 +180,119 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4 flex items-center justify-center">
-    <div className="w-full max-w-xl bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-200">
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
-        <h1 className="text-3xl font-extrabold text-center text-white tracking-tight">
-          Data Structures Mentor
-        </h1>
-      </div>
-      
-      <div className="p-6 space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="data-structure" className="block text-sm font-medium text-slate-700 mb-2">
-              Select Data Structure
-            </label>
-            <select
-              id="data-structure"
-              value={dataStructure}
-              onChange={(e) => setDataStructure(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
-            >
-              <option value="">--Select--</option>
-              <option value="Stack">Stack</option>
-              <option value="Queue">Queue</option>
-              <option value="Linked List">Linked List</option>
-              <option value="Binary Tree">Binary Tree</option>
-            </select>
-          </div>
-          
-          <div>
-            <label htmlFor="difficulty" className="block text-sm font-medium text-slate-700 mb-2">
-              Select Difficulty
-            </label>
-            <select
-              id="difficulty"
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
-            >
-              <option value="">--Select--</option>
-              <option value="Easy">Easy</option>
-              <option value="Medium">Medium</option>
-              <option value="Hard">Hard</option>
-            </select>
-          </div>
+      <div className="w-full max-w-xl bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-200">
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
+          <h1 className="text-3xl font-extrabold text-center text-white tracking-tight">
+            Data Structures Mentor
+          </h1>
         </div>
-
-        <button 
-          onClick={generateProblem}
-          className="w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Generate Problem
-        </button>
-
-        {problem && (
-          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
-            <h2 className="text-lg font-semibold text-slate-800 mb-2">Problem:</h2>
-            <p className="text-slate-700">{problem}</p>
-          </div>
-        )}
-
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-semibold text-slate-800">Solution:</h2>
-            <div className="flex items-center space-x-2">
-              <label className="text-sm text-slate-700">Language:</label>
-              <Select
-                value={language}
-                onChange={handleLanguageChange}
-                options={languageOptions}
-                className="w-40"
-              />
+        
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="data-structure" className="block text-sm font-medium text-slate-700 mb-2">
+                Select Data Structure
+              </label>
+              <select
+                id="data-structure"
+                value={dataStructure}
+                onChange={(e) => setDataStructure(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+              >
+                <option value="">--Select--</option>
+                <option value="Stack">Stack</option>
+                <option value="Queue">Queue</option>
+                <option value="Linked List">Linked List</option>
+                <option value="Binary Tree">Binary Tree</option>
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="difficulty" className="block text-sm font-medium text-slate-700 mb-2">
+                Select Difficulty
+              </label>
+              <select
+                id="difficulty"
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+              >
+                <option value="">--Select--</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
             </div>
           </div>
-          
-          <DynamicEditor
-            height="300px"
-            language={language.value}
-            theme={editorTheme}
-            value={solution}
-            onChange={(value) => setSolution(value || "")}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-            }}
-          />
-          
+
           <button 
-            onClick={submitSolution}
-            className="w-full bg-green-600 text-white py-3 rounded-md mt-4 hover:bg-green-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            onClick={generateProblem}
+            className="w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            Submit Solution
+            Generate Problem
           </button>
+
+          {problem && (
+            <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
+              <h2 className="text-lg font-semibold text-slate-800 mb-2">Problem:</h2>
+              <p className="text-slate-700">{problem}</p>
+            </div>
+          )}
+
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-lg font-semibold text-slate-800">Solution:</h2>
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-slate-700">Language:</label>
+                <Select
+                  value={language}
+                  onChange={handleLanguageChange}
+                  options={languageOptions}
+                  className="w-40"
+                />
+              </div>
+            </div>
+            
+            <DynamicEditor
+              height="300px"
+              language={language.value}
+              theme={editorTheme}
+              value={solution}
+              onChange={(value) => setSolution(value || "")}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+              }}
+            />
+            
+            <button 
+              onClick={submitSolution}
+              className="w-full bg-green-600 text-white py-3 rounded-md mt-4 hover:bg-green-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            >
+              Submit Solution
+            </button>
+          </div>
+
+          {hints.length > 0 && (
+            <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
+              <h2 className="text-lg font-semibold text-slate-800 mb-2">Hints:</h2>
+              <ul className="list-disc pl-5 text-slate-700 space-y-1">
+                {hints.map((hint, index) => (
+                  <li key={index}>{hint}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {feedback && (
+            <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
+              <h2 className="text-lg font-semibold text-slate-800 mb-2">Feedback:</h2>
+              <p className="text-slate-700">{feedback}</p>
+            </div>
+          )}
         </div>
-
-        {hints.length > 0 && (
-          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
-            <h2 className="text-lg font-semibold text-slate-800 mb-2">Hints:</h2>
-            <ul className="list-disc pl-5 text-slate-700 space-y-1">
-              {hints.map((hint, index) => (
-                <li key={index}>{hint}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {feedback && (
-          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
-            <h2 className="text-lg font-semibold text-slate-800 mb-2">Feedback:</h2>
-            <p className="text-slate-700">{feedback}</p>
-          </div>
-        )}
       </div>
     </div>
-  </div>
   );
 }
 
