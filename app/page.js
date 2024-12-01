@@ -109,7 +109,7 @@ export default function Home() {
           </div>
 
           {feedback && (
-            <div className="mt-5">
+            <div className="mt-5 text-gray-800">
               <h2 className="text-xl font-bold mb-2">Feedback:</h2>
               <p className="bg-gray-100 p-3 rounded">{feedback}</p>
             </div>
