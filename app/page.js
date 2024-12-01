@@ -15,6 +15,9 @@ const languageOptions = [
   { value: "cpp", label: "C++" }
 ];
 
+// object store to cache hints
+const hintCache = {};
+
 // Default code templates for each language
 const defaultCodeTemplates = {
   python: "# Write your solution here\n",
@@ -31,7 +34,7 @@ const formatAIResponse = (text) => {
   // Step 2: Split the text into lines
   const lines = cleanedText.split('\n');
 
-  // Step 3: Process each line with special rules for patterns
+  // Step 3: Process each line to identify and preserve code blocks
   let isCodeBlock = false;
   const formattedLines = lines.map(line => {
     if (line.trim().startsWith('```')) {
@@ -39,36 +42,50 @@ const formatAIResponse = (text) => {
       isCodeBlock = !isCodeBlock;
       return line.trim();
     }
-
-    if (isCodeBlock) return line; // Keep lines in code blocks as-is
-
-    // Ensure "Instructions" and "Example" start a new paragraph
-    if (line.includes('Instructions') || line.includes('Example')) {
-      return `\n${line.trim()}`; // Add a newline before these keywords
-    }
-
-    // Ensure numbered lists start on a new line
-    return line.replace(/(\d+\.\s)/g, '\n$1'); // Add newline before each numbered item
+    return isCodeBlock ? line : line.trim(); // Keep lines in code blocks as-is
   });
 
   // Step 4: Join lines while ensuring proper spacing
-  const formattedText = formattedLines.join('\n').replace(/\n{2,}/g, '\n\n'); // Limit multiple newlines to 2
+  const formattedText = formattedLines.join('\n');
 
-  // Step 5: Split text into paragraphs outside code blocks
+  // Step 5: Split text into paragraphs with special handling for "Instructions" and "Example"
   const paragraphs = [];
-  if (!isCodeBlock) {
-    const sentences = formattedText.split(/(?<=\.)\s/); // Split by periods followed by space
-    const midIndex = Math.ceil(sentences.length / 2);
-
-    // Create two paragraphs from sentences
-    paragraphs.push(sentences.slice(0, midIndex).join(' '));
-    paragraphs.push(sentences.slice(midIndex).join(' '));
+  const instructionsExampleRegex = /(Instructions|Example)/i;
+  
+  // Check for "Instructions" or "Example" and split accordingly
+  if (instructionsExampleRegex.test(formattedText)) {
+    const splitText = formattedText.split(instructionsExampleRegex);
+    for (let i = 0; i < splitText.length; i++) {
+      if (instructionsExampleRegex.test(splitText[i])) {
+        paragraphs.push(splitText[i].trim());
+        if (i + 1 < splitText.length) {
+          paragraphs.push(splitText[i + 1].trim());
+          i++; // Skip next element as it has been added
+        }
+      } else {
+        if (splitText[i].trim()) {
+          paragraphs.push(splitText[i].trim());
+        }
+      }
+    }
   } else {
     paragraphs.push(formattedText);
   }
 
+  // Step 6: Format numbered options
+  const finalParagraphs = paragraphs.map(paragraph => {
+    // Split numbered options and format them
+    const numberedOptionsRegex = /(\d+\.\s)/g;
+    return paragraph.split(numberedOptionsRegex).map((part, index) => {
+      if (index > 0 && part.trim()) {
+        return `${part.trim()}`; // Return the option
+      }
+      return part; // Return the rest of the text
+    }).join('\n');
+  });
+
   // Return the formatted response with clear separation
-  return paragraphs.join('\n\n');
+  return finalParagraphs.join('\n\n');
 };
 
 export default function Home() {
@@ -78,6 +95,7 @@ export default function Home() {
   const [language, setLanguage] = useState(languageOptions[0]);
   const [solution, setSolution] = useState(defaultCodeTemplates[language.value]);
   const [feedback, setFeedback] = useState("");
+  const [hints, setHints] = useState([]);
   const [editorTheme, setEditorTheme] = useState("light");
   const [isClient, setIsClient] = useState(false);
 
@@ -121,6 +139,35 @@ export default function Home() {
     }
   };
 
+  // Function to fetch hints dynamically
+  const fetchHints = async (currentCode) => {
+    if (hintCache[currentCode]) {
+      setHints(hintCache[currentCode]);
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/get-hints", {
+        problem,
+        currentCode,
+      });
+
+      const fetchedHints = response.data.hints;
+      hintCache[currentCode] = fetchedHints; // Cache the hints
+      console.log("Fetched hints:", fetchedHints);
+      setHints(fetchedHints);
+    } catch (error) {
+      console.error("Error fetching hints:", error);
+    }
+  };
+
+  const handleCodeChange = (value) => {
+    const currentCode = value || "";
+    setSolution(currentCode);
+    fetchHints(currentCode);
+  };
+
+
   // Handle language change
   const handleLanguageChange = (selectedLanguage) => {
     setLanguage(selectedLanguage);
@@ -132,19 +179,25 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <h1 className="text-2xl font-bold mb-5 text-center text-gray-800">Data Structures Mentor</h1>
-
-          <div className="mb-5 text-gray-800">
-            <label htmlFor="data-structure" className="block mb-2">Select Data Structure:</label>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4 flex items-center justify-center">
+    <div className="w-full max-w-xl bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-200">
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
+        <h1 className="text-3xl font-extrabold text-center text-white tracking-tight">
+          Data Structures Mentor
+        </h1>
+      </div>
+      
+      <div className="p-6 space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="data-structure" className="block text-sm font-medium text-slate-700 mb-2">
+              Select Data Structure
+            </label>
             <select
               id="data-structure"
               value={dataStructure}
               onChange={(e) => setDataStructure(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
             >
               <option value="">--Select--</option>
               <option value="Stack">Stack</option>
@@ -153,14 +206,16 @@ export default function Home() {
               <option value="Binary Tree">Binary Tree</option>
             </select>
           </div>
-
-          <div className="mb-5 text-gray-800">
-            <label htmlFor="difficulty" className="block mb-2">Select Difficulty:</label>
+          
+          <div>
+            <label htmlFor="difficulty" className="block text-sm font-medium text-slate-700 mb-2">
+              Select Difficulty
+            </label>
             <select
               id="difficulty"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
             >
               <option value="">--Select--</option>
               <option value="Easy">Easy</option>
@@ -168,64 +223,76 @@ export default function Home() {
               <option value="Hard">Hard</option>
             </select>
           </div>
-
-          <button 
-            onClick={generateProblem}
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
-          >
-            Generate Problem
-          </button>
-
-          {problem && (
-            <div className="mt-5 text-gray-800">
-              <h2 className="text-xl font-bold mb-2">Problem:</h2>
-              <p className="bg-gray-100 p-3 rounded">{problem}</p>
-            </div>
-          )}
-
-          <div className="mt-5 text-gray-800">
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-bold">Solution:</h2>
-              <div className="flex items-center space-x-2">
-                <label>Language:</label>
-                <Select
-                  value={language}
-                  onChange={handleLanguageChange}
-                  options={languageOptions}
-                  className="w-40"
-                />
-              </div>
-            </div>
-            
-            <DynamicEditor
-              height="300px"
-              language={language.value}
-              theme={editorTheme}
-              value={solution}
-              onChange={(value) => setSolution(value || "")}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-              }}
-            />
-            
-            <button 
-              onClick={submitSolution}
-              className="w-full bg-green-500 text-white p-2 rounded mt-2 hover:bg-green-600 transition-colors"
-            >
-              Submit Solution
-            </button>
-          </div>
-
-          {feedback && (
-            <div className="mt-5 text-gray-800">
-              <h2 className="text-xl font-bold mb-2">Feedback:</h2>
-              <p className="bg-gray-100 p-3 rounded">{feedback}</p>
-            </div>
-          )}
         </div>
+
+        <button 
+          onClick={generateProblem}
+          className="w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
+          Generate Problem
+        </button>
+
+        {problem && (
+          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
+            <h2 className="text-lg font-semibold text-slate-800 mb-2">Problem:</h2>
+            <p className="text-slate-700">{problem}</p>
+          </div>
+        )}
+
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-lg font-semibold text-slate-800">Solution:</h2>
+            <div className="flex items-center space-x-2">
+              <label className="text-sm text-slate-700">Language:</label>
+              <Select
+                value={language}
+                onChange={handleLanguageChange}
+                options={languageOptions}
+                className="w-40"
+              />
+            </div>
+          </div>
+          
+          <DynamicEditor
+            height="300px"
+            language={language.value}
+            theme={editorTheme}
+            value={solution}
+            onChange={(value) => setSolution(value || "")}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+            }}
+          />
+          
+          <button 
+            onClick={submitSolution}
+            className="w-full bg-green-600 text-white py-3 rounded-md mt-4 hover:bg-green-700 transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            Submit Solution
+          </button>
+        </div>
+
+        {hints.length > 0 && (
+          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
+            <h2 className="text-lg font-semibold text-slate-800 mb-2">Hints:</h2>
+            <ul className="list-disc pl-5 text-slate-700 space-y-1">
+              {hints.map((hint, index) => (
+                <li key={index}>{hint}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {feedback && (
+          <div className="bg-slate-50 border border-slate-200 rounded-md p-4 shadow-inner">
+            <h2 className="text-lg font-semibold text-slate-800 mb-2">Feedback:</h2>
+            <p className="text-slate-700">{feedback}</p>
+          </div>
+        )}
       </div>
     </div>
+  </div>
   );
 }
 

@@ -21,6 +21,17 @@ CORS(app)
 groq_api_key = os.getenv("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")
 llm = ChatGroq(api_key='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')
 
+# Prompt template for generating hints
+hint_template = PromptTemplate(
+    input_variables=["problem", "code"],
+    template=(
+        "Problem: {problem}\n"
+        "Code so far:\n{code}\n"
+        "What is the next step or hint to solve this problem?"
+    )
+)
+
+
 # LangChain setup
 problem_template = """
 Generate a {difficulty} data structure problem involving {data_structure}.
@@ -59,6 +70,23 @@ def generate_problem():
         # Generate Problem using LangChain
         problem = problem_chain.invoke({"data_structure": data_structure, "difficulty": difficulty})
         return jsonify({"problem": problem})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/get-hints", methods=["POST"])
+def get_hints():
+    data = request.json
+    problem = data.get("problem", "")
+    current_code = data.get("currentCode", "")
+
+    if not problem or not current_code:
+        return jsonify({"error": "Problem and code are required."}), 400
+
+    try:
+        chain = LLMChain(prompt=hint_template, llm=llm)
+        hints = chain.run(problem=problem, code=current_code)
+        return jsonify({"hints": hints.split("\n")})  # Assuming multiple hints are separated by newlines
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
