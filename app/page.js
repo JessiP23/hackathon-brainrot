@@ -185,7 +185,7 @@ export default function Home() {
       {/* Theme Toggle */}
       <button 
         onClick={toggleTheme}
-        className={`fixed top-4 right-4 z-50 p-2 rounded-full transition-all duration-300 ${
+        className={`fixed top-4 right-80 z-50 p-2 rounded-full transition-all duration-300 ${
           theme === 'light' 
           ? 'bg-slate-200 text-slate-800 hover:bg-slate-300' 
           : 'bg-slate-700 text-white hover:bg-slate-600'
