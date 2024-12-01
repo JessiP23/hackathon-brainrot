@@ -161,12 +161,6 @@ export default function Home() {
     }
   };
 
-  const handleCodeChange = (value) => {
-    const currentCode = value || "";
-    setSolution(currentCode);
-    fetchHints(currentCode);
-  };
-
 
   // Handle language change
   const handleLanguageChange = (selectedLanguage) => {
