@@ -2,14 +2,33 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import "./app.css";
+import { Editor } from "@monaco-editor/react";
+import Select from "react-select";
+
+// Language options
+const languageOptions = [
+  { value: "python", label: "Python" },
+  { value: "javascript", label: "JavaScript" },
+  { value: "java", label: "Java" },
+  { value: "cpp", label: "C++" }
+];
+
+// Default code templates for each language
+const defaultCodeTemplates = {
+  python: "# Write your solution here\n",
+  javascript: "// Write your solution here\n",
+  java: "// Write your solution here\npublic class Solution {\n    public void solve() {\n        \n    }\n}\n",
+  cpp: "// Write your solution here\n#include <iostream>\n\nusing namespace std;\n\n"
+};
 
 export default function Home() {
   const [dataStructure, setDataStructure] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [problem, setProblem] = useState("");
-  const [solution, setSolution] = useState("");
+  const [language, setLanguage] = useState(languageOptions[0]);
+  const [solution, setSolution] = useState(defaultCodeTemplates[language.value]);
   const [feedback, setFeedback] = useState("");
+  const [editorTheme, setEditorTheme] = useState("light");
 
   // Function to generate a problem
   const generateProblem = async () => {
@@ -32,12 +51,19 @@ export default function Home() {
       const response = await axios.post("http://127.0.0.1:5000/submit-solution", {
         problem,
         solution,
+        language: language.value
       });
       setFeedback(response.data.feedback);
     } catch (error) {
       console.error("Error submitting solution:", error);
       setFeedback("Error submitting solution. Please try again.");
     }
+  };
+
+  // Handle language change
+  const handleLanguageChange = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
+    setSolution(defaultCodeTemplates[selectedLanguage.value]);
   };
 
   return (
@@ -93,13 +119,31 @@ export default function Home() {
           )}
 
           <div className="mt-5 text-gray-800">
-            <h2 className="text-xl font-bold mb-2">Solution:</h2>
-            <textarea
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl font-bold">Solution:</h2>
+              <div className="flex items-center space-x-2">
+                <label>Language:</label>
+                <Select
+                  value={language}
+                  onChange={handleLanguageChange}
+                  options={languageOptions}
+                  className="w-40"
+                />
+              </div>
+            </div>
+            
+            <Editor
+              height="300px"
+              language={language.value}
+              theme={editorTheme}
               value={solution}
-              onChange={(e) => setSolution(e.target.value)}
-              placeholder="Write your solution here..."
-              className="w-full p-2 border rounded h-40"
-            ></textarea>
+              onChange={(value) => setSolution(value || "")}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+              }}
+            />
+            
             <button 
               onClick={submitSolution}
               className="w-full bg-green-500 text-white p-2 rounded mt-2 hover:bg-green-600 transition-colors"
@@ -119,4 +163,3 @@ export default function Home() {
     </div>
   );
 }
-
