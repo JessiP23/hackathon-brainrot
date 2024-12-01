@@ -47,7 +47,7 @@ export default function Home() {
         <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <h1 className="text-2xl font-bold mb-5 text-center">Data Structures Mentor</h1>
 
-          <div className="mb-5">
+          <div className="mb-5 text-gray-800">
             <label htmlFor="data-structure" className="block mb-2">Select Data Structure:</label>
             <select
               id="data-structure"
