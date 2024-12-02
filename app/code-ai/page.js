@@ -204,241 +204,264 @@ export default function Home() {
 
   return (
     <div className={`min-h-screen ${theme === 'light' 
-      ? 'bg-gradient-to-br from-slate-50 to-slate-100' 
-      : 'bg-gradient-to-br from-slate-900 to-slate-800'} 
-      transition-colors duration-300 flex`}>
-      {/* Theme Toggle */}
-      <button 
-        onClick={toggleTheme}
-        className={`fixed top-4 right-80 z-50 p-2 rounded-full transition-all duration-300 ${
-          theme === 'light' 
-          ? 'bg-slate-200 text-slate-800 hover:bg-slate-300' 
-          : 'bg-slate-700 text-white hover:bg-slate-600'
-        }`}
-      >
-        {theme === 'light' ? '🌙' : '☀️'}
-      </button>
-
-      {/* Problem Section */}
-      <div className={`w-1/3 p-6 border-r ${
-        theme === 'light' 
-        ? 'bg-white border-slate-200' 
-        : 'bg-slate-800 border-slate-700'
-      }`}>
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="data-structure" className={`block text-sm font-medium ${
-                theme === 'light' ? 'text-slate-700' : 'text-white'
-              } mb-2`}>
-                Select Data Structure
-              </label>
-              <select
-                id="data-structure"
-                value={dataStructure}
-                onChange={(e) => setDataStructure(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm transition duration-200 ${
-                  theme === 'light'
-                  ? 'border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-slate-900'
-                  : 'border-slate-600 bg-slate-700 text-white focus:ring-indigo-400 focus:border-indigo-400'
-                }`}
-              >
-                <option value="">--Select--</option>
-                <option value="Stack">Stack</option>
-                <option value="Queue">Queue</option>
-                <option value="Linked List">Linked List</option>
-                <option value="Binary Tree">Binary Tree</option>
-              </select>
-            </div>
-            
-            <div>
-              <label htmlFor="difficulty" className={`block text-sm font-medium ${
-                theme === 'light' ? 'text-slate-700' : 'text-white'
-              } mb-2`}>
-                Select Difficulty
-              </label>
-              <select
-                id="difficulty"
-                value={difficulty}
-                onChange={(e) => setDifficulty(e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md shadow-sm transition duration-200 ${
-                  theme === 'light'
-                  ? 'border-slate-300 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-slate-900'
-                  : 'border-slate-600 bg-slate-700 text-white focus:ring-indigo-400 focus:border-indigo-400'
-                }`}
-              >
-                <option value="">--Select--</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </select>
-            </div>
-          </div>
-
+        ? 'bg-gradient-to-br from-gray-50 to-gray-100' 
+        : 'bg-gradient-to-br from-gray-900 to-gray-800'} 
+        transition-colors duration-300 flex flex-col`}>
+        <header className="w-full p-4 flex justify-between items-center bg-opacity-90 backdrop-blur-md fixed top-0 z-10">
+          <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
+            CodeCraft AI
+          </h1>
           <button 
-            onClick={generateProblem}
-            className={`w-full py-3 rounded-md transition-colors duration-300 ${
-              theme === 'light'
-              ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-              : 'bg-indigo-500 text-white hover:bg-indigo-600'
+            onClick={toggleTheme}
+            className={`p-2 rounded-full transition-all duration-300 ${
+              theme === 'light' 
+              ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' 
+              : 'bg-gray-700 text-white hover:bg-gray-600'
             }`}
           >
-            Generate Problem
+            {theme === 'light' ? '🌙' : '☀️'}
           </button>
-
-          {problem && (
-            <div className={`rounded-md p-4 ${
-              theme === 'light'
-              ? 'bg-slate-50 border border-slate-200'
-              : 'bg-slate-700 border border-slate-600'
-            }`}>
-              <h2 className={`text-lg font-semibold mb-2 ${
-                theme === 'light' ? 'text-slate-800' : 'text-white'
-              }`}>Problem:</h2>
-              <p className={theme === 'light' ? 'text-slate-700' : 'text-slate-200'}>{problem}</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-     
-
-      {/* Solution Section */}
-      <div className={`w-2/3 p-6 ${
-        theme === 'light' 
-        ? 'bg-white' 
-        : 'bg-slate-900'
-      }`}>
-        <div className="space-y-6">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className={`text-lg font-semibold ${
-              theme === 'light' ? 'text-slate-800' : 'text-white'
-            }`}>Solution:</h2>
-            <div className="flex items-center space-x-2">
-              <label className={`text-sm ${
-                theme === 'light' ? 'text-slate-700' : 'text-slate-300'
-              }`}>Language:</label>
-              <Select
-                value={language}
-                onChange={handleLanguageChange}
-                options={languageOptions}
-                className={`text-sm w-40 ${
-                  theme === 'light' ? 'text-slate-700' : 'text-gray-800'
-                }`}
-                theme={theme === 'light' ? 'default' : 'dark'}
-              />
-            </div>
-          </div>
-          
-          <DynamicEditor
-            height="400px"
-            language={language.value}
-            theme={theme === 'light' ? 'light' : 'vs-dark'}
-            value={solution}
-            onChange={(value) => setSolution(value || "")}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-            }}
-          />
-          
-          <div className="flex space-x-4">
-            <button 
-              onClick={submitSolution}
-              className={`flex-1 py-3 rounded-md transition-colors duration-300 ${
-                theme === 'light'
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-green-500 text-white hover:bg-green-600'
-              }`}
-            >
-              Submit Solution
-            </button>
-            
-            <button 
-              onClick={getAISolution}
-              className={`flex-1 py-3 rounded-md transition-colors duration-300 ${
-                theme === 'light'
-                ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                : 'bg-indigo-500 text-white hover:bg-indigo-600'
-              }`}
-            >
-              Get AI Solution
-            </button>
-          </div>
-
-          {hints.length > 0 && (
-            <div className={`rounded-md p-4 ${
-              theme === 'light'
-              ? 'bg-slate-50 border border-slate-200'
-              : 'bg-slate-800 border border-slate-700'
-            }`}>
-              <h2 className={`text-lg font-semibold mb-2 ${
-                theme === 'light' ? 'text-slate-800' : 'text-white'
-              }`}>Hints:</h2>
-              <ul className={`list-disc pl-5 space-y-1 ${
-                theme === 'light' ? 'text-slate-700' : 'text-slate-300'
-              }`}>
-                {hints.map((hint, index) => (
-                  <li key={index}>{hint}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {feedback && (
-            <div className={`rounded-md p-4 ${
-              theme === 'light'
-              ? 'bg-slate-50 border border-slate-200'
-              : 'bg-slate-800 border border-slate-700'
-            }`}>
-              <h2 className={`text-lg font-semibold mb-2 ${
-                theme === 'light' ? 'text-slate-800' : 'text-white'
-              }`}>Feedback:</h2>
-              <p className={theme === 'light' ? 'text-slate-700' : 'text-slate-300'}>{feedback}</p>
-            </div>
-          )}
-
-          {showAISolutionModal && (
-            <div 
-              className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 ${
-                theme === 'light' ? 'bg-opacity-30' : 'bg-opacity-70'
-              }`}
-              onClick={() => setShowAISolutionModal(false)}
-            >
-              <div 
-                className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg p-6 ${
-                  theme === 'light'
-                  ? 'bg-white shadow-2xl'
-                  : 'bg-slate-800 shadow-2xl'
-                }`}
-                onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className={`text-2xl font-bold ${
-                    theme === 'light' ? 'text-slate-800' : 'text-white'
-                  }`}>AI Solution</h2>
-                  <button 
-                    onClick={() => setShowAISolutionModal(false)}
-                    className={`px-4 py-2 rounded ${
+        </header>
+  
+        <main className="flex flex-1 mt-16">
+          <div className={`w-1/3 p-6 border-r overflow-y-auto ${
+            theme === 'light' 
+            ? 'bg-white border-gray-200' 
+            : 'bg-gray-800 border-gray-700'
+          }`}>
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="data-structure" className={`block text-sm font-medium ${
+                    theme === 'light' ? 'text-gray-700' : 'text-gray-200'
+                  } mb-2`}>
+                    Data Structure
+                  </label>
+                  <select
+                    id="data-structure"
+                    value={dataStructure}
+                    onChange={(e) => setDataStructure(e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm transition duration-200 ${
                       theme === 'light'
-                      ? 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-                      : 'bg-slate-700 text-white hover:bg-slate-600'
+                      ? 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-900'
+                      : 'border-gray-600 bg-gray-700 text-white focus:ring-indigo-400 focus:border-indigo-400'
                     }`}
                   >
-                    Close
-                  </button>
+                    <option value="">--Select--</option>
+                    <option value="Stack">Stack</option>
+                    <option value="Queue">Queue</option>
+                    <option value="Linked List">Linked List</option>
+                    <option value="Binary Tree">Binary Tree</option>
+                  </select>
                 </div>
-                <div className={`${
-                  theme === 'light' ? 'text-slate-700' : 'text-slate-300'
-                }`}>
-                  <p className="whitespace-pre-wrap">{aiSolution}</p>
+                
+                <div>
+                  <label htmlFor="difficulty" className={`block text-sm font-medium ${
+                    theme === 'light' ? 'text-gray-700' : 'text-gray-200'
+                  } mb-2`}>
+                    Difficulty
+                  </label>
+                  <select
+                    id="difficulty"
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm transition duration-200 ${
+                      theme === 'light'
+                      ? 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 bg-white text-gray-900'
+                      : 'border-gray-600 bg-gray-700 text-white focus:ring-indigo-400 focus:border-indigo-400'
+                    }`}
+                  >
+                    <option value="">--Select--</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
                 </div>
               </div>
+  
+              <button 
+                onClick={generateProblem}
+                className={`w-full py-3 rounded-md transition-colors duration-300 ${
+                  theme === 'light'
+                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  : 'bg-indigo-500 text-white hover:bg-indigo-600'
+                }`}
+              >
+                Generate Problem
+              </button>
+  
+              {problem && (
+                <div className={`rounded-md p-4 ${
+                  theme === 'light'
+                  ? 'bg-gray-50 border border-gray-200'
+                  : 'bg-gray-700 border border-gray-600'
+                }`}>
+                  <h2 className={`text-lg font-semibold mb-2 ${
+                    theme === 'light' ? 'text-gray-800' : 'text-white'
+                  }`}>Problem:</h2>
+                  <p className={theme === 'light' ? 'text-gray-700' : 'text-gray-200'}>{problem}</p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+  
+          <div className={`w-2/3 p-6 overflow-y-auto ${
+            theme === 'light' 
+            ? 'bg-gray-50' 
+            : 'bg-gray-900'
+          }`}>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center mb-2">
+                <h2 className={`text-lg font-semibold ${
+                  theme === 'light' ? 'text-gray-800' : 'text-white'
+                }`}>Solution:</h2>
+                <div className="flex items-center space-x-2">
+                  <label className={`text-sm ${
+                    theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                  }`}>Language:</label>
+                  <Select
+                    value={language}
+                    onChange={handleLanguageChange}
+                    options={languageOptions}
+                    className={`text-sm w-40 ${
+                      theme === 'light' ? 'text-gray-700' : 'text-gray-800'
+                    }`}
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        backgroundColor: theme === 'light' ? 'white' : '#374151',
+                        borderColor: theme === 'light' ? '#d1d5db' : '#4b5563',
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused
+                          ? theme === 'light'
+                            ? '#e5e7eb'
+                            : '#4b5563'
+                          : theme === 'light'
+                            ? 'transparent'
+                            : '#374151', // Set background color for unselected options in dark mode
+                        color: theme === 'light' ? '#111827' : '#f3f4f6',
+                      }),
+                      singleValue: (provided) => ({
+                        ...provided,
+                        color: theme === 'light' ? '#111827' : '#f3f4f6',
+                      }),
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <DynamicEditor
+                height="400px"
+                language={language.value}
+                theme={theme === 'light' ? 'light' : 'vs-dark'}
+                value={solution}
+                onChange={(value) => setSolution(value || "")}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                }}
+              />
+              
+              <div className="flex space-x-4">
+                <button 
+                  onClick={submitSolution}
+                  className={`flex-1 py-3 rounded-md transition-colors duration-300 ${
+                    theme === 'light'
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-green-500 text-white hover:bg-green-600'
+                  }`}
+                >
+                  Submit Solution
+                </button>
+                
+                <button 
+                  onClick={getAISolution}
+                  className={`flex-1 py-3 rounded-md transition-colors duration-300 ${
+                    theme === 'light'
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    : 'bg-indigo-500 text-white hover:bg-indigo-600'
+                  }`}
+                >
+                  Get AI Solution
+                </button>
+              </div>
+  
+              {hints.length > 0 && (
+                <div className={`rounded-md p-4 ${
+                  theme === 'light'
+                  ? 'bg-gray-50 border border-gray-200'
+                  : 'bg-gray-700 border border-gray-600'
+                }`}>
+                  <h2 className={`text-lg font-semibold mb-2 ${
+                    theme === 'light' ? 'text-gray-800' : 'text-white'
+                  }`}>Hints:</h2>
+                  <ul className={`list-disc pl-5 space-y-1 ${
+                    theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                  }`}>
+                    {hints.map((hint, index) => (
+                      <li key={index}>{hint}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+  
+              {feedback && (
+                <div className={`rounded-md p-4 ${
+                  theme === 'light'
+                  ? 'bg-gray-50 border border-gray-200'
+                  : 'bg-gray-700 border border-gray-600'
+                }`}>
+                  <h2 className={`text-lg font-semibold mb-2 ${
+                    theme === 'light' ? 'text-gray-800' : 'text-white'
+                  }`}>Feedback:</h2>
+                  <p className={theme === 'light' ? 'text-gray-700' : 'text-gray-300'}>{feedback}</p>
+                </div>
+              )}
+  
+              {showAISolutionModal && (
+                <div 
+                  className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 ${
+                    theme === 'light' ? 'bg-opacity-30' : 'bg-opacity-70'
+                  }`}
+                  onClick={() => setShowAISolutionModal(false)}
+                >
+                  <div 
+                    className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg p-6 ${
+                      theme === 'light'
+                      ? 'bg-white shadow-2xl'
+                      : 'bg-gray-800 shadow-2xl'
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className={`text-2xl font-bold ${
+                        theme === 'light' ? 'text-gray-800' : 'text-white'
+                      }`}>AI Solution</h2>
+                      <button 
+                        onClick={() => setShowAISolutionModal(false)}
+                        className={`px-4 py-2 rounded ${
+                          theme === 'light'
+                          ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                          : 'bg-gray-700 text-white hover:bg-gray-600'
+                        }`}
+                      >
+                        Close
+                      </button>
+                    </div>
+                    <div className={`${
+                      theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                    }`}>
+                      <p className="whitespace-pre-wrap">{aiSolution}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
   );
 }
 
