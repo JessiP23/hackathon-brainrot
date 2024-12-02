@@ -32,7 +32,7 @@ const formatAIResponse = (text) => {
     const lines = cleanedText.split('\n');
     let isCodeBlock = false;
     const formattedLines = lines.map(line => {
-      if (line.trim().startsWith('```')) {
+      if (line.trim().startsWith('\`\`\`')) {
         isCodeBlock = !isCodeBlock;
         return line.trim();
       }
@@ -72,7 +72,7 @@ const formatAIResponse = (text) => {
     });
   
     return finalParagraphs.join('\n\n');
-};
+  };  
 
 export default function Home() {
   const [dataStructure, setDataStructure] = useState("");
@@ -86,6 +86,7 @@ export default function Home() {
   const [theme, setTheme] = useState("light");
   const [aiSolution, setAiSolution] = useState("");
   const [showAISolutionModal, setShowAISolutionModal] = useState(false);
+  const [optimizations, setOptimizations] = useState([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -140,29 +141,6 @@ export default function Home() {
         language: language.value
       });
       setFeedback(formatAIResponse(response.data.feedback));
-    } catch (error) {
-      console.error("Error submitting solution:", error);
-      setFeedback("Error submitting solution. Please try again.");
-    }
-  };
-
-  const handleSubmit = async () => {
-    // Check if problem and solution are not empty
-    if (!problem || !solution) {
-      setFeedback("Please generate a problem and write a solution first.");
-      return;
-    }
-
-    try {
-      const response = await axios.post("http://127.0.0.1:5000/submit-solution", {
-        problem,
-        solution,
-        language: language.value
-      });
-      setFeedback(formatAIResponse(response.data.feedback));
-      
-      // Optionally fetch hints after submission
-      fetchHints(solution);
     } catch (error) {
       console.error("Error submitting solution:", error);
       setFeedback("Error submitting solution. Please try again.");
