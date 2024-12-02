@@ -28,65 +28,51 @@ const defaultCodeTemplates = {
 
 // Function to format AI responses
 const formatAIResponse = (text) => {
-  // Step 1: Remove unwanted characters
-  let cleanedText = text.replace(/[*\\]/g, ''); // Remove unwanted characters like asterisks, slashes, etc.
-
-  // Step 2: Split the text into lines
-  const lines = cleanedText.split('\n');
-
-  // Step 3: Process each line to identify and preserve code blocks
-  let isCodeBlock = false;
-  const formattedLines = lines.map(line => {
-    if (line.trim().startsWith('```')) {
-      // Toggle the code block flag and return the line as-is
-      isCodeBlock = !isCodeBlock;
-      return line.trim();
-    }
-    return isCodeBlock ? line : line.trim(); // Keep lines in code blocks as-is
-  });
-
-  // Step 4: Join lines while ensuring proper spacing
-  const formattedText = formattedLines.join('\n');
-
-  // Step 5: Split text into paragraphs with special handling for "Instructions" and "Example"
-  const paragraphs = [];
-  const instructionsExampleRegex = /(Instructions|Example)/i;
-  
-  // Check for "Instructions" or "Example" and split accordingly
-  if (instructionsExampleRegex.test(formattedText)) {
-    const splitText = formattedText.split(instructionsExampleRegex);
-    for (let i = 0; i < splitText.length; i++) {
-      if (instructionsExampleRegex.test(splitText[i])) {
-        paragraphs.push(splitText[i].trim());
-        if (i + 1 < splitText.length) {
-          paragraphs.push(splitText[i + 1].trim());
-          i++; // Skip next element as it has been added
-        }
-      } else {
-        if (splitText[i].trim()) {
+    let cleanedText = text.replace(/[*\\]/g, '');
+    const lines = cleanedText.split('\n');
+    let isCodeBlock = false;
+    const formattedLines = lines.map(line => {
+      if (line.trim().startsWith('```')) {
+        isCodeBlock = !isCodeBlock;
+        return line.trim();
+      }
+      return isCodeBlock ? line : line.trim();
+    });
+    const formattedText = formattedLines.join('\n');
+    const paragraphs = [];
+    const instructionsExampleRegex = /(Instructions|Example)/i;
+    
+    if (instructionsExampleRegex.test(formattedText)) {
+      const splitText = formattedText.split(instructionsExampleRegex);
+      for (let i = 0; i < splitText.length; i++) {
+        if (instructionsExampleRegex.test(splitText[i])) {
           paragraphs.push(splitText[i].trim());
+          if (i + 1 < splitText.length) {
+            paragraphs.push(splitText[i + 1].trim());
+            i++;
+          }
+        } else {
+          if (splitText[i].trim()) {
+            paragraphs.push(splitText[i].trim());
+          }
         }
       }
+    } else {
+      paragraphs.push(formattedText);
     }
-  } else {
-    paragraphs.push(formattedText);
-  }
-
-  // Step 6: Format numbered options
-  const finalParagraphs = paragraphs.map(paragraph => {
-    // Split numbered options and format them
-    const numberedOptionsRegex = /(\d+\.\s)/g;
-    return paragraph.split(numberedOptionsRegex).map((part, index) => {
-      if (index > 0 && part.trim()) {
-        return `${part.trim()}`; // Return the option
-      }
-      return part; // Return the rest of the text
-    }).join('\n');
-  });
-
-  // Return the formatted response with clear separation
-  return finalParagraphs.join('\n\n');
-};
+  
+    const finalParagraphs = paragraphs.map(paragraph => {
+      const numberedOptionsRegex = /(\d+\.\s)/g;
+      return paragraph.split(numberedOptionsRegex).map((part, index) => {
+        if (index > 0 && part.trim()) {
+          return `${part.trim()}`;
+        }
+        return part;
+      }).join('\n');
+    });
+  
+    return finalParagraphs.join('\n\n');
+  };
 
 export default function Home() {
   const [dataStructure, setDataStructure] = useState("");
