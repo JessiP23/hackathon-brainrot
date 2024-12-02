@@ -26,7 +26,13 @@ solution_template = PromptTemplate.from_template(
     "You are an expert programmer. Given the following problem and programming language, provide a detailed solution:\n\n"
     "Problem: {problem}\n"
     "Language: {language}\n\n"
-    "Please provide a step-by-step solution with explanations and the final code."
+    "Please provide a step-by-step solution with explanations and the final code. Format your response as follows:\n"
+    "1. Problem Understanding:\n   [Explain the problem and its requirements]\n"
+    "2. Approach:\n   [Describe the approach to solve the problem]\n"
+    "3. Step-by-step Solution:\n   [Provide a detailed step-by-step explanation]\n"
+    "4. Code:\n   ```{language}\n   [Provide the complete code solution]\n   ```\n"
+    "5. Time and Space Complexity:\n   [Analyze the time and space complexity]\n"
+    "6. Additional Notes:\n   [Any extra information or optimization tips]"
 )
 
 
