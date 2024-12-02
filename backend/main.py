@@ -42,7 +42,10 @@ hint_template = PromptTemplate(
     template=(
         "Problem: {problem}\n"
         "Code so far:\n{code}\n"
-        "What is the next step or hint to solve this problem?"
+        "Provide 3 helpful hints to solve this problem, formatted as follows:\n"
+        "1. [First hint]\n"
+        "2. [Second hint]\n"
+        "3. [Third hint]"
     )
 )
 
