@@ -96,10 +96,22 @@ export default function Home() {
   const [randomBug, setRandomBug] = useState(null);
   const [aiPersonality, setAiPersonality] = useState('normal');
   const [confettiMode, setConfettiMode] = useState(false);
+  const [brainrotMode, setBrainrotMode] = useState(false);
+  const [brainrotLevel, setBrainrotLevel] = useState(0);
+  const [randomThought, setRandomThought] = useState("");
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+
+    // Set up interval for random thoughts in brainrot mode
+    let thoughtInterval;
+    if (brainrotMode) {
+      thoughtInterval = setInterval(() => {
+        setRandomThought(generateRandomThought());
+      }, 5000);
+    }
+    return () => clearInterval(thoughtInterval);
+  }, [brainrotMode]);
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -219,6 +231,24 @@ export default function Home() {
     setConfettiMode(!confettiMode);
   };
 
+  const toggleBrainrotMode = () => {
+    setBrainrotMode(!brainrotMode);
+    if (!brainrotMode) {
+      setBrainrotLevel(0);
+    }
+  };
+
+  const generateRandomThought = () => {
+    const thoughts = [
+      "Is mayonnaise an instrument?",
+      "Why don't we just take the bugs and push them somewhere else?",
+      "I wonder if my code dreams when I'm not running it...",
+      "What if semicolons are just periods doing handstands?",
+      "Do arrays start at 0 because they're afraid of commitment?",
+    ];
+    return thoughts[Math.floor(Math.random() * thoughts.length)];
+  };
+
   const handleEditorChange = (value, event) => {
     setSolution(value || "");
     // Count typos (simplified: count words less than 3 characters)
@@ -238,6 +268,25 @@ export default function Home() {
     // Debounce the fetchHints call to avoid too many requests
     clearTimeout(window.hintTimer);
     window.hintTimer = setTimeout(() => fetchHints(value), 1000);
+
+    if (brainrotMode) {
+        setBrainrotLevel(prevLevel => Math.min(prevLevel + 1, 100));
+        if (Math.random() < 0.1) {
+          const brainrotCode = applyBrainrot(value);
+          setSolution(brainrotCode);
+        }
+      }
+  };
+
+  const applyBrainrot = (code) => {
+    const brainrotEffects = [
+      (c) => c.replace(/\bif\b/g, 'when_the_stars_align'),
+      (c) => c.replace(/\bfor\b/g, 'do_the_loop_de_loop'),
+      (c) => c.replace(/\bfunction\b/g, 'magic_spell'),
+      (c) => c.replace(/\breturn\b/g, 'yeet'),
+      (c) => c.replace(/\bconsole\.log\b/g, 'scream_into_the_void'),
+    ];
+    return brainrotEffects[Math.floor(Math.random() * brainrotEffects.length)](code);
   };
 
   const toggleDancingCharacters = () => {
@@ -286,6 +335,9 @@ export default function Home() {
             }`}
           >
             {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+          <button onClick={toggleBrainrotMode} className="p-2 bg-red-400 rounded-full">
+            🧠
           </button>
         </div>
       </header>
@@ -539,6 +591,9 @@ export default function Home() {
         <p className={`text-sm mt-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
           AI Personality: {aiPersonality.charAt(0).toUpperCase() + aiPersonality.slice(1)}
         </p>
+        <p className={`text-sm mt-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+          Brainrot Level: {brainrotLevel}% | Random Thought: {randomThought}
+        </p>
       </footer>
 
       {rubberDuckMode && (
@@ -582,6 +637,27 @@ export default function Home() {
                 }}
               >
                 {['🎉', '🎊', '✨', '🌟', '🍾'][Math.floor(Math.random() * 5)]}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+{brainrotMode && (
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute w-full h-full overflow-hidden">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-float text-3xl"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDuration: `${Math.random() * 10 + 5}s`,
+                  animationDelay: `${Math.random() * 5}s`
+                }}
+              >
+                {['🧠', '💭', '🤪', '🥴', '🤯'][Math.floor(Math.random() * 5)]}
               </div>
             ))}
           </div>
