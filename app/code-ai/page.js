@@ -72,7 +72,7 @@ const formatAIResponse = (text) => {
     });
   
     return finalParagraphs.join('\n\n');
-  };
+};
 
 export default function Home() {
   const [dataStructure, setDataStructure] = useState("");
