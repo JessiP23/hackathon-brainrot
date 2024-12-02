@@ -53,10 +53,35 @@ hint_template = PromptTemplate(
 solution_chain = LLMChain(llm=llm, prompt=solution_template, output_parser=StrOutputParser())
 
 # LangChain setup
+# LangChain setup
 problem_template = """
 Generate a {difficulty} data structure problem involving {data_structure}.
 Provide a clear problem description with instructions and constraints.
+Format your response as follows:
+
+1. Problem Title:
+   [Provide a concise title for the problem]
+
+2. Description:
+   [Detailed problem description]
+
+3. Input:
+   [Describe the input format]
+
+4. Output:
+   [Describe the expected output format]
+
+5. Constraints:
+   - [List any constraints or limitations]
+
+6. Example:
+   Input: [Provide a sample input]
+   Output: [Provide the corresponding output]
+
+7. Notes:
+   [Any additional information or hints]
 """
+
 problem_prompt = PromptTemplate.from_template(problem_template)
 problem_chain = problem_prompt | llm | StrOutputParser()
 
@@ -66,19 +91,33 @@ Evaluate the following solution:
 Problem: {problem}
 Solution: {solution}
 
-Provide a detailed feedback response, including:
-1. If the solution is correct or not.
-2. Suggestions for improvement.
-3. Time and space complexity analysis.
-4. Any additional concepts the user could learn from this problem.
+Provide a detailed feedback response, formatted as follows:
+
+1. Correctness:
+   [State if the solution is correct or not, and explain why]
+
+2. Code Quality:
+   [Evaluate the code quality, readability, and adherence to best practices]
+
+3. Efficiency:
+   [Analyze the time and space complexity]
+
+4. Suggestions for Improvement:
+   - [List specific suggestions for improving the solution]
+
+5. Alternative Approaches:
+   [Mention any alternative approaches, if applicable]
+
+6. Learning Opportunities:
+   [Suggest related concepts or problems for further learning]
 """
+
 evaluation_prompt = PromptTemplate.from_template(evaluation_template)
 evaluation_chain = evaluation_prompt | llm | StrOutputParser()
 
 @app.route('/generate-problem', methods=['POST'])
 def generate_problem():
     try:
-        # the data that requests json and takes as parameters the data structure and difficulty
         data = request.json
         data_structure = data.get('dataStructure')
         difficulty = data.get('difficulty')
