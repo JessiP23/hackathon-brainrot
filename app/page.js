@@ -206,7 +206,7 @@ function getAISolution() {
       </main>
 
       <footer className="mt-12 text-center text-gray-500 pb-6">
-        <p>&copy; 2023 CodeCraft AI. All rights reserved.</p>
+        <p>&copy; 2024 CodeCraft AI. All rights reserved.</p>
       </footer>
     </div>
   )
