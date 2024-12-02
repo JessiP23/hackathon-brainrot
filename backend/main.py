@@ -164,7 +164,6 @@ def get_hints():
         return jsonify({"error": str(e)}), 500
 
 
-# the submit soltuion post request that takes in the problem and solution as the parameters
 @app.route('/submit-solution', methods=['POST'])
 def submit_solution():
     try:
