@@ -86,7 +86,11 @@ export default function Home() {
   const [theme, setTheme] = useState("light");
   const [aiSolution, setAiSolution] = useState("");
   const [showAISolutionModal, setShowAISolutionModal] = useState(false);
-  const [optimizations, setOptimizations] = useState([]);
+  const [funnyQuote, setFunnyQuote] = useState("");
+  const [rubberDuckMode, setRubberDuckMode] = useState(false);
+  const [coffeeLevel, setCoffeeLevel] = useState(100);
+  const [typoCount, setTypoCount] = useState(0);
+  const [dancingCharacters, setDancingCharacters] = useState(false)
 
   useEffect(() => {
     setIsClient(true);
@@ -176,6 +180,34 @@ export default function Home() {
     setSolution(defaultCodeTemplates[selectedLanguage.value]);
   };
 
+  const toggleRubberDuckMode = () => {
+    setRubberDuckMode(!rubberDuckMode);
+  };
+
+  const drinkCoffee = () => {
+    setCoffeeLevel(prevLevel => Math.min(prevLevel + 20, 100));
+  };
+
+  const handleEditorChange = (value, event) => {
+    setSolution(value || "");
+    // Count typos (simplified: count words less than 3 characters)
+    const words = value.split(/\s+/);
+    const typos = words.filter(word => word.length < 3).length;
+    setTypoCount(typos);
+
+    // Reduce coffee level as you type
+    setCoffeeLevel(prevLevel => Math.max(prevLevel - 1, 0));
+
+    // Debounce the fetchHints call to avoid too many requests
+    clearTimeout(window.hintTimer);
+    window.hintTimer = setTimeout(() => fetchHints(value), 1000);
+  };
+
+  const toggleDancingCharacters = () => {
+    setDancingCharacters(!dancingCharacters);
+  };
+  
+
   if (!isClient) {
     return null; // or a loading spinner
   }
@@ -186,9 +218,19 @@ export default function Home() {
         : 'bg-gradient-to-br from-gray-900 to-gray-800'} 
         transition-colors duration-300 flex flex-col`}>
         <header className="w-full p-4 flex justify-between items-center bg-opacity-90 backdrop-blur-md fixed top-0 z-10">
-          <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-            CodeCraft AI
-          </h1>
+        <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
+          CodeCraft AI
+        </h1>
+        <div className="flex items-center space-x-4">
+          <button onClick={toggleRubberDuckMode} className="p-2 bg-yellow-400 rounded-full">
+            🦆
+          </button>
+          <button onClick={drinkCoffee} className="p-2 bg-brown-600 rounded-full">
+            ☕
+          </button>
+          <button onClick={toggleDancingCharacters} className="p-2 bg-purple-600 rounded-full">
+            💃
+          </button>
           <button 
             onClick={toggleTheme}
             className={`p-2 rounded-full transition-all duration-300 ${
@@ -199,7 +241,8 @@ export default function Home() {
           >
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
-        </header>
+        </div>
+      </header>
   
         <main className="flex flex-1 mt-16">
           <div className={`w-1/3 p-6 border-r overflow-y-auto ${
@@ -439,7 +482,30 @@ export default function Home() {
             </div>
           </div>
         </main>
+
+        <footer className="p-4 text-center">
+        <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+          {funnyQuote}
+        </p>
+        <p className={`text-sm mt-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+          Coffee Level: {coffeeLevel}% | Typo Count: {typoCount}
+        </p>
+      </footer>
+
+      {rubberDuckMode && (
+        <div className="fixed bottom-4 right-4 text-6xl animate-bounce">
+          🦆
+        </div>
+      )}
+
+      {dancingCharacters && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl">
+          <span className="animate-dance inline-block">🕺</span>
+          <span className="animate-dance inline-block" style={{animationDelay: '0.1s'}}>💃</span>
+          <span className="animate-dance inline-block" style={{animationDelay: '0.2s'}}>🕺</span>
+          <span className="animate-dance inline-block" style={{animationDelay: '0.3s'}}>💃</span>
+        </div>
+      )}
       </div>
   );
 }
-
