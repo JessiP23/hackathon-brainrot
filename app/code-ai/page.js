@@ -305,7 +305,7 @@ export default function Home() {
         transition-colors duration-300 flex flex-col`}>
         <header className="w-full p-4 flex justify-between items-center bg-opacity-90 backdrop-blur-md fixed top-0 z-10">
         <h1 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-          CodeCraft AI
+          Bubbles AI
         </h1>
         <div className="flex items-center space-x-4">
           <button onClick={toggleRubberDuckMode} className="p-2 bg-yellow-400 rounded-full">
