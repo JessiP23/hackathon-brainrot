@@ -99,6 +99,7 @@ export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [theme, setTheme] = useState("light");
   const [aiSolution, setAiSolution] = useState("");
+  const [showAISolutionModal, setShowAISolutionModal] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -115,9 +116,11 @@ export default function Home() {
         language: language.value
       });
       setAiSolution(formatAIResponse(response.data.solution));
+      setShowAISolutionModal(true);
     } catch (error) {
       console.error("Error getting AI solution:", error);
       setAiSolution("Error getting AI solution. Please try again.");
+      setShowAISolutionModal(true);
     }
   };
 
@@ -312,29 +315,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-8">
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          className={`w-full py-3 rounded-md transition-colors duration-300 ${
-            theme === 'light'
-            ? 'bg-blue-600 text-white hover:bg-blue-700'
-            : 'bg-blue-500 text-white hover:bg-blue-600'
-          }`}
-        >
-          Submit Solution
-        </button>
-        <button 
-          onClick={getAISolution}
-          className={`w-full py-3 rounded-md mt-4 transition-colors duration-300 ${
-            theme === 'light'
-            ? 'bg-blue-600 text-white hover:bg-blue-700'
-            : 'bg-blue-500 text-white hover:bg-blue-600'
-          }`}
-        >
-          Get AI Solution
-        </button>
-      </div>
+     
 
       {/* Solution Section */}
       <div className={`w-2/3 p-6 ${
@@ -431,16 +412,42 @@ export default function Home() {
             </div>
           )}
 
-{aiSolution && (
-            <div className={`rounded-md p-4 mt-4 ${
-              theme === 'light'
-              ? 'bg-slate-50 border border-slate-200'
-              : 'bg-slate-800 border border-slate-700'
-            }`}>
-              <h2 className={`text-lg font-semibold mb-2 ${
-                theme === 'light' ? 'text-slate-800' : 'text-white'
-              }`}>AI Solution:</h2>
-              <p className={theme === 'light' ? 'text-slate-700' : 'text-slate-300'}>{aiSolution}</p>
+          {showAISolutionModal && (
+            <div 
+              className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 ${
+                theme === 'light' ? 'bg-opacity-30' : 'bg-opacity-70'
+              }`}
+              onClick={() => setShowAISolutionModal(false)}
+            >
+              <div 
+                className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg p-6 ${
+                  theme === 'light'
+                  ? 'bg-white shadow-2xl'
+                  : 'bg-slate-800 shadow-2xl'
+                }`}
+                onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className={`text-2xl font-bold ${
+                    theme === 'light' ? 'text-slate-800' : 'text-white'
+                  }`}>AI Solution</h2>
+                  <button 
+                    onClick={() => setShowAISolutionModal(false)}
+                    className={`px-4 py-2 rounded ${
+                      theme === 'light'
+                      ? 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                      : 'bg-slate-700 text-white hover:bg-slate-600'
+                    }`}
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className={`${
+                  theme === 'light' ? 'text-slate-700' : 'text-slate-300'
+                }`}>
+                  <p className="whitespace-pre-wrap">{aiSolution}</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
