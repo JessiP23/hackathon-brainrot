@@ -28,3 +28,22 @@ body {
 .animate-dance {
   animation: dance 0.5s infinite;
 }
+
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.3s infinite;
+}
+
+@keyframes fall {
+  0% { transform: translateY(-100vh) rotate(0deg); }
+  100% { transform: translateY(100vh) rotate(720deg); }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+}

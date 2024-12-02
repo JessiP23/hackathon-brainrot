@@ -90,7 +90,12 @@ export default function Home() {
   const [rubberDuckMode, setRubberDuckMode] = useState(false);
   const [coffeeLevel, setCoffeeLevel] = useState(100);
   const [typoCount, setTypoCount] = useState(0);
-  const [dancingCharacters, setDancingCharacters] = useState(false)
+  const [dancingCharacters, setDancingCharacters] = useState(false);
+  const [memeMode, setMemeMode] = useState(false);
+  const [codingStreak, setCodingStreak] = useState(0);
+  const [randomBug, setRandomBug] = useState(null);
+  const [aiPersonality, setAiPersonality] = useState('normal');
+  const [confettiMode, setConfettiMode] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -188,6 +193,32 @@ export default function Home() {
     setCoffeeLevel(prevLevel => Math.min(prevLevel + 20, 100));
   };
 
+  const toggleMemeMode = () => {
+    setMemeMode(!memeMode);
+  };
+
+  const incrementCodingStreak = () => {
+    setCodingStreak(prevStreak => prevStreak + 1);
+  };
+
+  const generateRandomBug = () => {
+    const bugs = ['🐛', '🐞', '🦟', '🕷️', '🦗'];
+    const randomBug = bugs[Math.floor(Math.random() * bugs.length)];
+    setRandomBug(randomBug);
+    setTimeout(() => setRandomBug(null), 3000);
+  };
+
+  const changeAiPersonality = () => {
+    const personalities = ['normal', 'sassy', 'pirate', 'shakespearean', 'valley-girl'];
+    const currentIndex = personalities.indexOf(aiPersonality);
+    const nextIndex = (currentIndex + 1) % personalities.length;
+    setAiPersonality(personalities[nextIndex]);
+  };
+
+  const toggleConfettiMode = () => {
+    setConfettiMode(!confettiMode);
+  };
+
   const handleEditorChange = (value, event) => {
     setSolution(value || "");
     // Count typos (simplified: count words less than 3 characters)
@@ -197,6 +228,12 @@ export default function Home() {
 
     // Reduce coffee level as you type
     setCoffeeLevel(prevLevel => Math.max(prevLevel - 1, 0));
+
+    incrementCodingStreak();
+
+    if (Math.random() < 0.1) {
+        generateRandomBug();
+    }
 
     // Debounce the fetchHints call to avoid too many requests
     clearTimeout(window.hintTimer);
@@ -230,6 +267,15 @@ export default function Home() {
           </button>
           <button onClick={toggleDancingCharacters} className="p-2 bg-purple-600 rounded-full">
             💃
+          </button>
+          <button onClick={toggleMemeMode} className="p-2 bg-green-400 rounded-full">
+            😂
+          </button>
+          <button onClick={changeAiPersonality} className="p-2 bg-blue-400 rounded-full">
+            🎭
+          </button>
+          <button onClick={toggleConfettiMode} className="p-2 bg-pink-400 rounded-full">
+            🎉
           </button>
           <button 
             onClick={toggleTheme}
@@ -488,7 +534,10 @@ export default function Home() {
           {funnyQuote}
         </p>
         <p className={`text-sm mt-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-          Coffee Level: {coffeeLevel}% | Typo Count: {typoCount}
+          Coffee Level: {coffeeLevel}% | Typo Count: {typoCount} | Coding Streak: {codingStreak} 🔥
+        </p>
+        <p className={`text-sm mt-2 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+          AI Personality: {aiPersonality.charAt(0).toUpperCase() + aiPersonality.slice(1)}
         </p>
       </footer>
 
@@ -504,6 +553,38 @@ export default function Home() {
           <span className="animate-dance inline-block" style={{animationDelay: '0.1s'}}>💃</span>
           <span className="animate-dance inline-block" style={{animationDelay: '0.2s'}}>🕺</span>
           <span className="animate-dance inline-block" style={{animationDelay: '0.3s'}}>💃</span>
+        </div>
+      )}
+
+      {memeMode && (
+        <div className="fixed top-20 left-4 text-4xl animate-pulse">
+          {['🤔', '🧐', '🤓', '😎', '🤯'][Math.floor(Math.random() * 5)]}
+        </div>
+      )}
+
+      {randomBug && (
+        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 text-4xl animate-wiggle">
+          {randomBug}
+        </div>
+      )}
+
+      {confettiMode && (
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute w-full h-full overflow-hidden">
+            {[...Array(50)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-fall"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  animationDuration: `${Math.random() * 3 + 2}s`,
+                  animationDelay: `${Math.random() * 5}s`
+                }}
+              >
+                {['🎉', '🎊', '✨', '🌟', '🍾'][Math.floor(Math.random() * 5)]}
+              </div>
+            ))}
+          </div>
         </div>
       )}
       </div>
