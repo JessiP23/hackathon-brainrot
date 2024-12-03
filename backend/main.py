@@ -169,6 +169,8 @@ def get_hints():
     if not problem or not current_code:
         return jsonify({"error": "Problem and code are required."}), 400
 
+
+    # Generate hints using LangChain
     try:
         chain = LLMChain(prompt=hint_template, llm=llm)
         hints = chain.run(problem=problem, code=current_code)
