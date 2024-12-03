@@ -126,6 +126,7 @@ export default function Home() {
   // Function to get AI solution
   const getAISolution = async () => {
     try {
+      // Call the API backend to get AI solution
       const response = await axios.post("http://127.0.0.1:5000/get-ai-solution", {
         problem,
         language: language.value
