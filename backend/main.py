@@ -114,6 +114,7 @@ Provide a detailed feedback response, formatted as follows:
    [Suggest related concepts or problems for further learning]
 """
 
+# Create the LLMChain for evaluating solutions
 evaluation_prompt = PromptTemplate.from_template(evaluation_template)
 evaluation_chain = evaluation_prompt | llm | StrOutputParser()
 
