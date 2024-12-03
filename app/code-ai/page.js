@@ -117,6 +117,8 @@ export default function Home() {
     return () => clearInterval(thoughtInterval);
   }, [brainrotMode]);
 
+
+  // Function to toggle theme from light to dark
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   }
