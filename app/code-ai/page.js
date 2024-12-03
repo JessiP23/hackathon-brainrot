@@ -131,6 +131,8 @@ export default function Home() {
         problem,
         language: language.value
       });
+
+      // Format the AI response and show it in a modal
       setAiSolution(formatAIResponse(response.data.solution));
       setShowAISolutionModal(true);
     } catch (error) {
