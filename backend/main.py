@@ -141,6 +141,8 @@ def generate_problem():
 @app.route('/get-ai-solution', methods=['POST'])
 def get_ai_solution():
     data = request.json
+    
+    # Get the problem and language from the request
     problem = data.get('problem')
     language = data.get('language')
 
