@@ -5,6 +5,7 @@ import axios from "axios";
 import dynamic from 'next/dynamic';
 import Select from "react-select";
 
+// Dynamic element calling the IDE editor
 const DynamicEditor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.Editor), { ssr: false });
 
 // Language options
