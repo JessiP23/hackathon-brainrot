@@ -136,6 +136,8 @@ def generate_problem():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# Endpoint to get an AI solution for a given problem
 @app.route('/get-ai-solution', methods=['POST'])
 def get_ai_solution():
     data = request.json
