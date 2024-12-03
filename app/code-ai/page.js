@@ -64,6 +64,7 @@ const formatAIResponse = (text) => {
       paragraphs.push(formattedText);
     }
   
+    // Add line breaks after numbered options
     const finalParagraphs = paragraphs.map(paragraph => {
       const numberedOptionsRegex = /(\d+\.\s)/g;
       return paragraph.split(numberedOptionsRegex).map((part, index) => {
