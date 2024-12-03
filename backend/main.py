@@ -156,6 +156,8 @@ def get_ai_solution():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# Endpoint to get hints for a given problem and code
 @app.route("/get-hints", methods=["POST"])
 def get_hints():
     data = request.json
