@@ -20,6 +20,7 @@ CORS(app)
 
 # Initialize Groq LLM
 groq_api_key = os.getenv("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")
+# Initialize the ChatGroq API with the provided API key
 llm = ChatGroq(api_key='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')
 
 # Define the prompt template for generating AI solutions
