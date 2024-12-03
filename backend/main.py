@@ -183,6 +183,8 @@ def get_hints():
 @app.route('/submit-solution', methods=['POST'])
 def submit_solution():
     try:
+        
+        # Get the problem and solution from the request
         data = request.json
         problem = data.get('problem')
         solution = data.get('solution')
