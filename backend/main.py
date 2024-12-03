@@ -6,6 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+# Import the Flask module
 from flask_cors import CORS
 
 # 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
