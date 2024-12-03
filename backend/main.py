@@ -117,6 +117,7 @@ evaluation_chain = evaluation_prompt | llm | StrOutputParser()
 
 @app.route('/generate-problem', methods=['POST'])
 def generate_problem():
+    # Get the data from the request
     try:
         data = request.json
         data_structure = data.get('dataStructure')
