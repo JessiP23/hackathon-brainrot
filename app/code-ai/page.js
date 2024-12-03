@@ -39,6 +39,8 @@ const formatAIResponse = (text) => {
       }
       return isCodeBlock ? line : line.trim();
     });
+
+    // Split text into paragraphs based on empty lines
     const formattedText = formattedLines.join('\n');
     const paragraphs = [];
     const instructionsExampleRegex = /(Instructions|Example)/i;
