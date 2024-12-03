@@ -26,6 +26,7 @@ export default function LandingPage() {
         </h1>
       </header>
 
+      {/* main component, header and footer */}
       <main className="container mx-auto px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
