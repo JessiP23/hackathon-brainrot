@@ -149,6 +149,7 @@ def get_ai_solution():
     if not problem or not language:
         return jsonify({"error": "Missing problem or language"}), 400
 
+    # Generate AI solution using LangChain
     try:
         solution = solution_chain.run(problem=problem, language=language)
         return jsonify({"solution": solution})
