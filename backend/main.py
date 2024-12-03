@@ -160,6 +160,8 @@ def get_ai_solution():
 # Endpoint to get hints for a given problem and code
 @app.route("/get-hints", methods=["POST"])
 def get_hints():
+    
+    # Get the problem and current code from the request
     data = request.json
     problem = data.get("problem", "")
     current_code = data.get("currentCode", "")
