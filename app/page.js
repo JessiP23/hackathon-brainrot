@@ -17,6 +17,7 @@ export default function LandingPage() {
     setMessage('')
   }
 
+  // Render the landing page content
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white overflow-hidden">
       <header className="p-6">
