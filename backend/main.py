@@ -192,6 +192,7 @@ def submit_solution():
         if not problem or not solution:
             return jsonify({"error": "Missing problem or solution"}), 400
 
+        # Evaluate the solution using LangChain
         feedback = evaluation_chain.invoke({"problem": problem, "solution": solution})
         return jsonify({"feedback": feedback})
     except Exception as e:
